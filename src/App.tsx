@@ -23,6 +23,7 @@ export const App: React.FC = () => {
       }
 
       const data: Todo[] = await response.json();
+
       setTodos(data);
     } catch (e) {
       setError((e as Error).message);
