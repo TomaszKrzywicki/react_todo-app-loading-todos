@@ -14,6 +14,20 @@ body {
   min-height: 36px;
 }
 
+.notification--error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.notification .delete {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: inherit;
+}
+
 .notification.hidden {
   min-height: 0;
   opacity: 0;

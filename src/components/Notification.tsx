@@ -1,24 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 
 type Props = {
-  message: string | null;
+  message: string;
   onClose: () => void;
 };
 
 export const Notification: React.FC<Props> = ({ message, onClose }) => {
-  const [hidden, setHidden] = useState(true);
-
   useEffect(() => {
-    if (message) {
-      setHidden(false);
-
-      const timer = setTimeout(() => {
-        setHidden(true);
-        onClose();
-      }, 3000);
-
-      return () => clearTimeout(timer);
+    if (!message) {
+      return;
     }
+
+    const timer = setTimeout(() => {
+      onClose();
+    }, 3000);
+
+    return () => clearTimeout(timer);
   }, [message, onClose]);
 
   if (!message) {
@@ -26,15 +23,13 @@ export const Notification: React.FC<Props> = ({ message, onClose }) => {
   }
 
   return (
-    <div className={`notification ${hidden ? 'hidden' : ''}`}>
+    <div className="notification notification--error">
       <span>{message}</span>
       <button
         type="button"
         className="delete"
-        onClick={() => {
-          setHidden(true);
-          onClose();
-        }}
+        onClick={onClose}
+        aria-label="close"
       >
         ×
       </button>

@@ -1,32 +1,21 @@
 import React, { useEffect, useState } from 'react';
+import { getTodos } from './api/todos';
 import { Todo } from './types/Todo';
 import { TodoList } from './components/TodoList';
-import { Footer } from './components/Footer';
 import { Notification } from './components/Notification';
-
-const USER_ID = 2479;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState('');
 
+  // --- Funkcja loadTodos musi być zdefiniowana przed useEffect ---
   const loadTodos = async () => {
     try {
-      setError(null);
-      const response = await fetch(
-        `https://jsonplaceholder.typicode.com/users/${USER_ID}/todos`,
-      );
-
-      if (!response.ok) {
-        throw new Error('Unable to load todos');
-      }
-
-      const data: Todo[] = await response.json();
-
+      setError('');
+      const data = await getTodos(2479); // używamy USER_ID z api/todos.ts
       setTodos(data);
-    } catch (e) {
-      setError((e as Error).message);
+    } catch {
+      setError('Unable to load todos. Please try again.');
     }
   };
 
@@ -34,35 +23,29 @@ export const App: React.FC = () => {
     loadTodos();
   }, []);
 
-  const filteredTodos = todos.filter(todo => {
-    if (filter === 'active') {
-      return !todo.completed;
-    }
-
-    if (filter === 'completed') {
-      return todo.completed;
-    }
-
-    return true;
-  });
-
   return (
     <div className="todoapp">
-      <h1 className="todoapp__title">Todos</h1>
+      <header className="header">
+        <h1 className="todoapp__title">Todo App</h1>
 
-      {todos.length > 0 && (
-        <>
-          <TodoList todos={filteredTodos} />
+        {/* Dummy input, aby aplikacja nie wyglądała pusto */}
+        <input
+          type="text"
+          className="new-todo"
+          placeholder="What needs to be done?"
+          disabled
+        />
+      </header>
 
-          <Footer
-            todos={todos}
-            currentFilter={filter}
-            onFilterChange={setFilter}
-          />
-        </>
+      {/* Lista todos */}
+      {todos.length > 0 ? (
+        <TodoList todos={todos} />
+      ) : (
+        <p className="no-todos">No todos yet. Start by adding one!</p>
       )}
 
-      <Notification message={error} onClose={() => setError(null)} />
+      {/* Powiadomienie o błędach */}
+      <Notification message={error} onClose={() => setError('')} />
     </div>
   );
 };
