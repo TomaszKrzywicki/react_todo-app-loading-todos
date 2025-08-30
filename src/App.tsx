@@ -13,6 +13,7 @@ export const App: React.FC = () => {
     try {
       setError('');
       const data = await getTodos(2479); // używamy USER_ID z api/todos.ts
+
       setTodos(data);
     } catch {
       setError('Unable to load todos. Please try again.');
