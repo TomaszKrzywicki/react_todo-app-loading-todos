@@ -6,7 +6,9 @@ type Props = {
 };
 
 export const TodoList: React.FC<Props> = ({ todos }) => {
-  if (todos.length === 0) return null;
+  if (todos.length === 0) {
+    return null;
+  }
 
   return (
     <section className="main">

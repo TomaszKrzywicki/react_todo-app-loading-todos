@@ -17,6 +17,7 @@ export const App: React.FC = () => {
   const loadTodos = useCallback(async () => {
     try {
       const todosFromServer = await getTodos();
+
       setTodos(todosFromServer);
     } catch {
       showError('Unable to load todos');
@@ -24,13 +25,21 @@ export const App: React.FC = () => {
   }, [showError]);
 
   useEffect(() => {
-    if (USER_ID) loadTodos();
+    if (USER_ID) {
+      loadTodos();
+    }
   }, [loadTodos]);
 
   // Filtrowanie todos po statusie
   const filteredTodos = todos.filter(todo => {
-    if (filter === 'active') return !todo.completed;
-    if (filter === 'completed') return todo.completed;
+    if (filter === 'active') {
+      return !todo.completed;
+    }
+
+    if (filter === 'completed') {
+      return todo.completed;
+    }
+
     return true;
   });
 
