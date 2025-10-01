@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 type Props = {
   message: string;
@@ -6,16 +6,18 @@ type Props = {
 };
 
 export const Notification: React.FC<Props> = ({ message, onClose }) => {
+  const [hidden, setHidden] = useState(true);
+
   useEffect(() => {
-    if (!message) {
-      return;
+    if (message) {
+      setHidden(false);
+      const timer = setTimeout(() => {
+        setHidden(true);
+        onClose();
+      }, 3000);
+
+      return () => clearTimeout(timer);
     }
-
-    const timer = setTimeout(() => {
-      onClose();
-    }, 3000);
-
-    return () => clearTimeout(timer);
   }, [message, onClose]);
 
   if (!message) {
@@ -23,13 +25,18 @@ export const Notification: React.FC<Props> = ({ message, onClose }) => {
   }
 
   return (
-    <div className="notification notification--error">
+    <div
+      className={`notification notification--error ${hidden ? 'hidden' : ''}`}
+    >
       <span>{message}</span>
+      {/* tylko jeden przycisk "x" */}
       <button
         type="button"
-        className="delete"
-        onClick={onClose}
-        aria-label="close"
+        className="notification__close"
+        onClick={() => {
+          setHidden(true);
+          onClose();
+        }}
       >
         ×
       </button>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Todo } from '../types/Todo';
+import { Todo } from '../api/todos';
 
 type Props = {
   todos: Todo[];
@@ -15,7 +15,7 @@ export const TodoList: React.FC<Props> = ({ todos }) => (
               type="checkbox"
               className="toggle"
               checked={todo.completed}
-              onChange={() => {}}
+              readOnly
             />
             <label>{todo.title}</label>
           </div>

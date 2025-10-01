@@ -1,8 +1,11 @@
 import { Todo } from '../types/Todo';
 import { client } from '../utils/fetchClient';
 
-// Tu wpisz swój userId z rejestracji (np. 2479)
+// 🔹 Tu wpisz swój userId z rejestracji (np. 2479)
 export const USER_ID = 2479;
+
+// ✅ Eksport typu, żeby można było go importować w App.tsx
+export type { Todo };
 
 export const getTodos = () => {
   return client.get<Todo[]>(`/todos?userId=${USER_ID}`);
