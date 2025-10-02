@@ -1,9 +1,14 @@
-import { createRoot } from 'react-dom/client';
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { App } from './App'; // ⬅️ import nazwany
+import './styles/index.scss'; // ⬅️ jeśli masz globalne style w SCSS
 
-import 'bulma/css/bulma.css';
-import '@fortawesome/fontawesome-free/css/all.css';
-import './styles/index.scss';
+const root = ReactDOM.createRoot(
+  document.getElementById('root') as HTMLElement,
+);
 
-import { App } from './App';
-
-createRoot(document.getElementById('root') as HTMLDivElement).render(<App />);
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+);
