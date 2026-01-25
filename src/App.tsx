@@ -25,8 +25,14 @@ export const App: React.FC = () => {
 
   // Filtrujemy todos według wybranego filtra
   const filteredTodos = todos.filter(todo => {
-    if (filter === 'active') return !todo.completed;
-    if (filter === 'completed') return todo.completed;
+    if (filter === 'active') {
+      return !todo.completed;
+    }
+
+    if (filter === 'completed') {
+      return todo.completed;
+    }
+
     return true; // 'all'
   });
 
@@ -50,10 +56,7 @@ export const App: React.FC = () => {
 
       {/* Filtry */}
       <div className="filters">
-        <button
-          onClick={() => setFilter('all')}
-          disabled={filter === 'all'}
-        >
+        <button onClick={() => setFilter('all')} disabled={filter === 'all'}>
           All
         </button>
         <button
