@@ -1,7 +1,6 @@
 import { Todo } from '../types/Todo';
 import { client } from '../utils/fetchClient';
 
-// Tu wpisz swój userId z rejestracji (np. 2479)
 export const USER_ID = 2479;
 
 export const getTodos = () => {

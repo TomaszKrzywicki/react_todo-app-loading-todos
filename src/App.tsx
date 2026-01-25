@@ -1,110 +1,94 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Todo } from './types/Todo';
-import { getTodos, USER_ID } from './api/todos';
-import { UserWarning } from './UserWarning';
-import { TodoList } from './components/TodoList';
+import { getTodos } from './api/todos';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [newTitle, setNewTitle] = useState('');
   const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
 
-  const showError = useCallback((message: string) => {
-    setErrorMessage(message);
-    setTimeout(() => setErrorMessage(''), 3000);
+  useEffect(() => {
+    getTodos()
+      .then(res => {
+        setTodos(res); // fetchClient zwraca już Todo[]
+        setLoading(false);
+      })
+      .catch(() => {
+        setError('Unable to load todos');
+        setLoading(false);
+      });
   }, []);
 
-  const loadTodos = useCallback(async () => {
-    try {
-      const todosFromServer = await getTodos();
+  const activeCount = todos.filter(t => !t.completed).length;
 
-      setTodos(todosFromServer);
-    } catch {
-      showError('Unable to load todos');
-    }
-  }, [showError]);
-
-  useEffect(() => {
-    if (USER_ID) {
-      loadTodos();
-    }
-  }, [loadTodos]);
-
-  // Filtrowanie todos po statusie
+  // Filtrujemy todos według wybranego filtra
   const filteredTodos = todos.filter(todo => {
-    if (filter === 'active') {
-      return !todo.completed;
-    }
-
-    if (filter === 'completed') {
-      return todo.completed;
-    }
-
-    return true;
+    if (filter === 'active') return !todo.completed;
+    if (filter === 'completed') return todo.completed;
+    return true; // 'all'
   });
 
   return (
     <div className="todoapp">
-      <h1 className="todoapp__title">todos</h1>
+      <h1 className="todoapp__title">Todos</h1>
 
-      {!USER_ID && <UserWarning />}
+      {error && <div data-cy="ErrorNotification">{error}</div>}
 
-      {USER_ID && (
-        <>
-          <header className="todoapp__header">
-            <form>
-              <input
-                type="text"
-                className="todoapp__new-todo"
-                placeholder="What needs to be done?"
-                disabled
-              />
-            </form>
-          </header>
+      <input
+        data-cy="NewTodoField"
+        type="text"
+        placeholder="What needs to be done?"
+        value={newTitle}
+        onChange={e => setNewTitle(e.target.value)}
+      />
 
-          <TodoList todos={filteredTodos} />
+      {loading && <p>Loading todos...</p>}
 
-          {todos.length > 0 && (
-            <footer className="todoapp__footer" data-cy="Footer">
-              <span className="todo-count" data-cy="TodosCounter">
-                {filteredTodos.length} items
-              </span>
-              <nav className="filter" data-cy="Filter">
-                <button
-                  className={filter === 'all' ? 'selected' : ''}
-                  onClick={() => setFilter('all')}
-                >
-                  All
-                </button>
-                <button
-                  className={filter === 'active' ? 'selected' : ''}
-                  onClick={() => setFilter('active')}
-                >
-                  Active
-                </button>
-                <button
-                  className={filter === 'completed' ? 'selected' : ''}
-                  onClick={() => setFilter('completed')}
-                >
-                  Completed
-                </button>
-              </nav>
-            </footer>
-          )}
-        </>
-      )}
+      {!loading && todos.length === 0 && <p>No todos</p>}
 
-      <div
-        data-cy="ErrorNotification"
-        className={`notification is-danger ${errorMessage ? '' : 'hidden'}`}
-      >
+      {/* Filtry */}
+      <div className="filters">
         <button
-          type="button"
-          className="delete"
-          onClick={() => setErrorMessage('')}
-        />
-        {errorMessage}
+          onClick={() => setFilter('all')}
+          disabled={filter === 'all'}
+        >
+          All
+        </button>
+        <button
+          onClick={() => setFilter('active')}
+          disabled={filter === 'active'}
+        >
+          Active
+        </button>
+        <button
+          onClick={() => setFilter('completed')}
+          disabled={filter === 'completed'}
+        >
+          Completed
+        </button>
       </div>
+
+      <ul>
+        {filteredTodos.map(todo => (
+          <li
+            key={todo.id}
+            data-cy="Todo"
+            className={todo.completed ? 'completed' : ''}
+          >
+            <span data-cy="TodoTitle">{todo.title}</span>
+          </li>
+        ))}
+      </ul>
+
+      {todos.length > 0 && (
+        <footer>
+          <span data-cy="TodosCounter">
+            {activeCount} {activeCount === 1 ? 'item' : 'items'} left
+          </span>
+        </footer>
+      )}
     </div>
   );
 };
